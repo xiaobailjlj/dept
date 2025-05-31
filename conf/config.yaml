@@ -19,6 +19,7 @@ logging:
 api:
   tmdb:
     base_url: "https://api.themoviedb.org/3"
+#    base_url: "https://mock.jingpersonal.click:6002"
     endpoints:
       search: "/search/movie"
       details: "/movie/{movie_id}"

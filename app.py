@@ -49,7 +49,7 @@ def request_tmdb_get(path, params=None):
 
     try:
         response = requests.get(url=url, params=params or {}, headers=headers, timeout=10)
-        logger.debug(f"TMDB API response: {response.status_code} - {response.text}")
+        # logger.debug(f"TMDB API response: {response.status_code} - {response.text}")
 
         if response.status_code != 200:
             raise Exception(f"API request failed with status {response.status_code}")
