@@ -32,5 +32,7 @@ cache:
   ttl: 300
 
 security:
+#  access_token: ''
+#  api_key: ''
   access_token: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzNTNlOGI2ZTU0ODI3ZDQ3NGM0MzEwY2NkZWFiZjgzMCIsIm5iZiI6MTc0ODY5MzUzMy44MTIsInN1YiI6IjY4M2FmMjFkMWM5ZTYxMjY4YzdmMzc5MyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.FvHr84eKoTxK3M50GkcVbNo6g1nxcNZEV2-YQD5w8JA'
   api_key: '353e8b6e54827d474c4310ccdeabf830'

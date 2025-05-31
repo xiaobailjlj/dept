@@ -74,7 +74,7 @@ def search_movies():
         # Validate required query parameter
         query = request.args.get('query', '').strip()
         if not query:
-            return error_response('Query parameter is required and cannot be empty')
+            return error_response('Query parameter is required and cannot be empty', 400)
 
         # Build TMDB API parameters
         params = {
@@ -95,7 +95,7 @@ def search_movies():
         # Validate sort parameter
         valid_sort_options = ['popularity', 'vote_average', 'vote_count']
         if sort_by not in valid_sort_options:
-            return error_response(f"sort_by must be one of: {', '.join(valid_sort_options)}")
+            return error_response(f"sort_by must be one of: {', '.join(valid_sort_options)}", 400)
 
         # Make API request
         query_path = config['api']['tmdb']['endpoints']['search']
@@ -177,7 +177,7 @@ def get_movie_with_recommendations(movie_id):
     try:
         # Validate movie_id
         if movie_id <= 0:
-            return error_response('Movie ID must be a positive integer')
+            return error_response('Movie ID must be a positive integer', 400)
 
         language = request.args.get('language', 'en-US')
         page = request.args.get('page', '1')
@@ -189,7 +189,7 @@ def get_movie_with_recommendations(movie_id):
             movie_data = request_tmdb_get(details_path, details_params)
         except Exception as e:
             logger.error(f"Failed to fetch movie details for ID {movie_id}: {str(e)}")
-            return error_response(f"Movie not found for ID {movie_id}", 404)
+            return error_response(f"{str(e)}", 500)
 
         # Get recommendations
         try:
@@ -198,7 +198,7 @@ def get_movie_with_recommendations(movie_id):
             rec_data = request_tmdb_get(recommendations_path, rec_params)
         except Exception as e:
             logger.warning(f"Failed to fetch recommendations for movie {movie_id}: {str(e)}")
-            return error_response(f"Recommendations not found for ID {movie_id}", 404)
+            return error_response(f"{str(e)}", 500)
 
         # Combine responses
         result = {
@@ -215,7 +215,7 @@ def get_movie_with_recommendations(movie_id):
 
 if __name__ == '__main__':
     if not TMDB_API_KEY or TMDB_API_KEY == 'your-tmdb-api-key':
-        logger.warning("TMDB API key not configured!")
+        logger.error("TMDB API key not configured!")
     if not TMDB_ACCESS_TOKEN or TMDB_ACCESS_TOKEN == 'your-tmdb-access-token':
         logger.error("TMDB Access Token not configured!")
 
