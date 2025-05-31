@@ -4,6 +4,7 @@ import requests
 import os
 import yaml
 import logging
+from functools import wraps
 
 
 def load_config(config_file='./conf/config.yaml'):
@@ -28,7 +29,21 @@ CORS(app,
 TMDB_ACCESS_TOKEN = config['security']['access_token']
 TMDB_API_KEY = config['security']['api_key']
 TMDB_BASE_URL = config['api']['tmdb']['base_url']
+USER_API_SECRET_KEY = config['security']['api_secret_key']
 
+
+def validate_api_key(f):
+    """Simple API key authentication decorator"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        api_key = request.headers.get('X-API-Key')
+
+        if not api_key or api_key != USER_API_SECRET_KEY:
+            return error_response('Invalid or missing API key', 401)
+
+        return f(*args, **kwargs)
+
+    return decorated_function
 
 def error_response(message, status_code=400):
     """Return standardized error response"""
@@ -67,6 +82,7 @@ def serve_frontend():
     return send_from_directory('static', 'index.html')
 
 @app.route('/api/movies/search', methods=['GET'])
+@validate_api_key
 def search_movies():
     """Search for movies using TMDB API with enhanced filtering and sorting"""
 
@@ -171,6 +187,7 @@ def extract_recommendation_fields(rec_data):
 
 
 @app.route('/api/movies/<int:movie_id>', methods=['GET'])
+@validate_api_key
 def get_movie_with_recommendations(movie_id):
     """Get movie details + recommendations in single response"""
 
