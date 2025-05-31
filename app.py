@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import requests
 import os
@@ -62,6 +62,9 @@ def request_tmdb_get(path, params=None):
     except requests.RequestException:
         raise Exception("API request failed")
 
+@app.route('/')
+def serve_frontend():
+    return send_from_directory('static', 'index.html')
 
 @app.route('/api/movies/search', methods=['GET'])
 def search_movies():
