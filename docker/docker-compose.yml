@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6389"
+    command: redis-server --requirepass tmdb-cache-key
+
+  web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "7700:7700"
+    environment:
+      - DOCKER_ENV=true  # Set the flag for config logic
+    volumes:
+      - ../instance:/app/instance
+    depends_on:
+      - redis

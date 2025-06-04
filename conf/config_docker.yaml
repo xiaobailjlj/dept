@@ -1,39 +1,35 @@
 server:
-  host: 'localhost'
+  host: '0.0.0.0'
   port: 7700
-  debug: true
+  debug: false
 
 cors:
   resources:
     "/*":
       origins: "*"
-#      origins: "https://jingpersonal.click"
   methods:
     - 'GET'
     - 'POST'
 
 logging:
-  level: 'INFO'  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  level: 'INFO'
 
 api:
   tmdb:
     base_url: "https://api.themoviedb.org/3"
-#    base_url: "https://mock.jingpersonal.click:6002"
     endpoints:
       search: "/search/movie"
       details: "/movie/{movie_id}"
       recommendations: "/movie/{movie_id}/recommendations"
 
 security:
-#  access_token: ''
-#  api_key: ''
-  admin_key: 'admin001'  # for use key management
+  admin_key: 'admin001'
   access_token: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzNTNlOGI2ZTU0ODI3ZDQ3NGM0MzEwY2NkZWFiZjgzMCIsIm5iZiI6MTc0ODY5MzUzMy44MTIsInN1YiI6IjY4M2FmMjFkMWM5ZTYxMjY4YzdmMzc5MyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.FvHr84eKoTxK3M50GkcVbNo6g1nxcNZEV2-YQD5w8JA'
-  api_key: '353e8b6e54827d474c4310ccdeabf830'  # for external api calls
+  api_key: '353e8b6e54827d474c4310ccdeabf830'
 
 cache:
   enabled: true
   ttl: 3600
-  host: 'localhost'
+  host: 'redis'
   port: 6379
   password: 'tmdb-cache-key'

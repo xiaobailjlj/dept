@@ -11,7 +11,7 @@ from auth.UserAuth import UserAuth
 
 
 # init config
-def load_config(config_file='./conf/config.yaml'):
+def load_config(config_file=''):
     config_path = os.path.join(os.path.dirname(__file__), config_file)
     try:
         with open(config_path, 'r') as file:
@@ -19,8 +19,12 @@ def load_config(config_file='./conf/config.yaml'):
     except (FileNotFoundError, yaml.YAMLError) as e:
         raise Exception(f"Config error: {e}")
 
+if os.getenv('DOCKER_ENV'):
+    config_file = './conf/config_docker.yaml'
+else:
+    config_file = './conf/config.yaml'
 
-config = load_config()
+config = load_config(config_file)
 
 # init logger
 logging.basicConfig(level=getattr(logging, config['logging']['level']))
