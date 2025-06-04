@@ -372,6 +372,7 @@
 
     <script>
         const API_BASE_URL = '/api';
+        const API_TOKEN = 'admin001'; // Fixed admin token
 
         const searchInput = document.getElementById('searchInput');
         const searchBtn = document.getElementById('searchBtn');
@@ -380,6 +381,14 @@
         const resultsContent = document.getElementById('resultsContent');
         const detailsSection = document.getElementById('detailsSection');
         const detailsContent = document.getElementById('detailsContent');
+
+        // Helper function to get headers with authorization
+        function getAuthHeaders() {
+            return {
+                'Authorization': `Bearer ${API_TOKEN}`,
+                'Content-Type': 'application/json'
+            };
+        }
 
         // Event listeners
         searchBtn.addEventListener('click', searchMovies);
@@ -432,7 +441,10 @@
                 const page = document.getElementById('page').value;
                 params.append('page', page);
 
-                const response = await fetch(`${API_BASE_URL}/movies/search?${params.toString()}`);
+                const response = await fetch(`${API_BASE_URL}/movies/search?${params.toString()}`, {
+                    method: 'GET',
+                    headers: getAuthHeaders()
+                });
                 const data = await response.json();
 
                 if (!response.ok) {
@@ -480,7 +492,10 @@
                 detailsContent.innerHTML = '<div class="loading">Loading movie details...</div>';
                 detailsSection.classList.remove('hidden');
 
-                const response = await fetch(`${API_BASE_URL}/movies/${movieId}`);
+                const response = await fetch(`${API_BASE_URL}/movies/${movieId}`, {
+                    method: 'GET',
+                    headers: getAuthHeaders()
+                });
                 const data = await response.json();
 
                 if (!response.ok) {
@@ -503,8 +518,11 @@
             const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
             const year = movie.release_date ? movie.release_date.split('-')[0] : 'N/A';
 
-            const recommendationsHtml = recommendations.results && recommendations.results.length > 0
-                ? recommendations.results.map(rec => {
+            // Fix: Handle both direct array and object with results property
+            const recommendationsList = Array.isArray(recommendations) ? recommendations : (recommendations.results || []);
+
+            const recommendationsHtml = recommendationsList && recommendationsList.length > 0
+                ? recommendationsList.map(rec => {
                     const recPosterUrl = rec.poster_path
                         ? `https://image.tmdb.org/t/p/w200${rec.poster_path}`
                         : 'https://via.placeholder.com/200x300/cccccc/666666?text=No+Image';

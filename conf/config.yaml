@@ -7,14 +7,13 @@ cors:
   resources:
     "/*":
       origins: "*"
+#      origins: "https://jingpersonal.click"
   methods:
     - 'GET'
     - 'POST'
-    - 'PUT'
-    - 'DELETE'
 
 logging:
-  level: 'DEBUG'
+  level: 'INFO'  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
 
 api:
   tmdb:
@@ -28,13 +27,16 @@ api:
     rate_limit:
       requests_per_minute: 100
 
-cache:
-  enabled: true
-  ttl: 300
-
 security:
 #  access_token: ''
 #  api_key: ''
-  api_secret_key: 'key001'  # for users
+  admin_key: 'admin001'  # for use key management
   access_token: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIzNTNlOGI2ZTU0ODI3ZDQ3NGM0MzEwY2NkZWFiZjgzMCIsIm5iZiI6MTc0ODY5MzUzMy44MTIsInN1YiI6IjY4M2FmMjFkMWM5ZTYxMjY4YzdmMzc5MyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.FvHr84eKoTxK3M50GkcVbNo6g1nxcNZEV2-YQD5w8JA'
   api_key: '353e8b6e54827d474c4310ccdeabf830'  # for external api calls
+
+cache:
+  enabled: true
+  ttl: 3600
+  host: 'localhost'
+  port: 6379
+  password: 'tmdb-cache-key'
