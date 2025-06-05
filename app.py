@@ -39,7 +39,7 @@ CORS(app,
 
 # constants
 TMDB_ACCESS_TOKEN = config['security']['access_token']
-TMDB_API_KEY = config['security']['api_key']
+# TMDB_API_KEY = config['security']['api_key']
 TMDB_BASE_URL = config['api']['tmdb']['base_url']
 ADMIN_API_KEY = config['security']['admin_key']
 TTL = config['cache']['ttl']
@@ -138,7 +138,7 @@ def search_movies():
 
         # Get filter and sort parameters
         original_language = request.args.get('original_language')
-        sort_by = request.args.get('sort_by', 'popularity')  # Default sort by popularity
+        sort_by = request.args.get('sort_by', 'popularity')  # Default popularity
 
         # Validate sort parameter
         valid_sort_options = ['popularity', 'vote_average', 'vote_count']
@@ -174,7 +174,6 @@ def search_movies():
 
 
 def extract_movie_fields(movie_data):
-    """Extract essential movie fields"""
     if not movie_data:
         return {'error': 'Movie not found'}
 
@@ -194,7 +193,6 @@ def extract_movie_fields(movie_data):
 
 
 def extract_recommendation_fields(rec_data):
-    """Extract essential recommendation fields and limit to 5"""
     if not rec_data:
         return {'error': 'Recommendations not found'}
 

@@ -185,6 +185,35 @@ curl -H "Authorization: Bearer mk_QazOTWqVXeEXWKhg7La_BlZJ0vtw0CCu0gZfIk-tE5o" \
 }
 ```
 
+### Common Error Responses
+
+**401 Unauthorized** - Invalid or missing API key:
+```json
+{
+    "error": "Invalid API key"
+}
+```
+
+**400 Bad Request** - Missing or invalid parameters:
+```json
+{
+    "error": "Query parameter is required and cannot be empty"
+}
+```
+
+**500 Internal Server Error** - External API or server issues:
+```json
+{
+    "error": "API request failed with status 429"
+}
+```
+
+### Status Codes
+- `200` - Success
+- `400` - Bad Request (validation errors)
+- `401` - Unauthorized (authentication required)
+- `500` - Internal Server Error (API failures, timeouts)
+
 ## TODO
 
 - use environment variables for sensitive data (api key for TMDB)
