@@ -1,4 +1,3 @@
-from cache.RedisCache import RedisCache
 from flask import Flask, request, jsonify, send_from_directory, g
 from flask_cors import CORS
 import requests
@@ -6,7 +5,7 @@ import os
 import yaml
 import logging
 
-# Import auth class
+from cache.RedisCache import RedisCache
 from auth.UserAuth import UserAuth
 
 
@@ -81,10 +80,8 @@ def create_client():
         return auth.error_response(str(e), 400)
 
 
-@app.route('/')
-def serve_frontend():
-    return send_from_directory('static', 'index.html')
-
+def error_response(message, status_code=400):
+    return jsonify({'error': message}), status_code
 
 def request_tmdb_get(path, params=None):
     if not TMDB_ACCESS_TOKEN or TMDB_ACCESS_TOKEN == 'your-tmdb-access-token':
@@ -112,8 +109,11 @@ def request_tmdb_get(path, params=None):
     except requests.RequestException:
         raise Exception("API request failed")
 
-def error_response(message, status_code=400):
-    return jsonify({'error': message}), status_code
+
+@app.route('/')
+def serve_frontend():
+    return send_from_directory('static', 'index.html')
+
 
 @app.route('/api/movies/search', methods=['GET'])
 @auth.validate_api
@@ -174,6 +174,7 @@ def search_movies():
 
 
 def extract_movie_fields(movie_data):
+    """Extract essential movie fields"""
     if not movie_data:
         return {'error': 'Movie not found'}
 
@@ -193,6 +194,7 @@ def extract_movie_fields(movie_data):
 
 
 def extract_recommendation_fields(rec_data):
+    """Extract essential recommendation fields and limit to 5"""
     if not rec_data:
         return {'error': 'Recommendations not found'}
 
@@ -215,10 +217,9 @@ def extract_recommendation_fields(rec_data):
         'total_results': len(filtered_results)
     }
 
-
 @app.route('/api/movies/<int:movie_id>', methods=['GET'])
 @auth.validate_api
-def get_movie_with_recommendations(movie_id):
+def get_movie(movie_id):
     try:
         # Validate movie_id
         if movie_id <= 0:
@@ -226,6 +227,14 @@ def get_movie_with_recommendations(movie_id):
 
         language = request.args.get('language', 'en-US')
         page = request.args.get('page', '1')
+        cache_key = f"movie:{movie_id}:{language}"
+
+        # Try cache
+        if cache:
+            cached = cache.get(cache_key)
+            if cached:
+                cached['cache_hit'] = True
+                return jsonify(cached), 200
 
         # Get movie details
         try:
@@ -248,8 +257,13 @@ def get_movie_with_recommendations(movie_id):
         # Combine responses
         result = {
             'movie': extract_movie_fields(movie_data),
-            'recommendations': extract_recommendation_fields(rec_data)
+            'recommendations': extract_recommendation_fields(rec_data),
+            'cache_hit': False
         }
+
+        # Cache result
+        if cache:
+            cache.set(cache_key, result, TTL)
 
         return jsonify(result), 200
 

@@ -15,6 +15,7 @@ class RedisCache:
                 decode_responses=True
             )
             # Test connection
+            self.logger.info(f"Connecting to Redis at {host}:{port}")
             self.redis.ping()
             self.logger.info(f"Redis connected: {host}:{port}")
         except Exception as e:
