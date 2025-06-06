@@ -35,6 +35,7 @@ redis-cli -a "tmdb-cache-key" ping
 # Run application
 python app.py
 
+# Access the application
 # Frontend: http://localhost:7700
 # API: http://localhost:7700/api
 ```
@@ -112,23 +113,27 @@ Authorization: Bearer {api_key or admin001}
 ```
 
 **Parameters:**
-- `query` (required) - Search term
-- `sort_by` - popularity, vote_average, vote_count
-- `original_language` - Filter by language (e.g., en, fr)
-- `primary_release_year` - Filter by year
-- `language` - Response language
-- `page` - Page number
+- `query` (required) - Search term (cannot be empty)
+- `include_adult` - default: false
+- `language` - default: en
+- `primary_release_year`
+- `year`
+- `region`
+- `page` - default: 1
+- `original_language` - Filter by original language 
+- `sort_by` - Sort results by: popularity, vote_average, vote_count, default: popularity)
 
 **Example:**
 ```bash
 curl -H "Authorization: Bearer mk_QazOTWqVXeEXWKhg7La_BlZJ0vtw0CCu0gZfIk-tE5o" \
-  "http://localhost:7700/api/movies/search?query=outrun&sort_by=popularity&original_language=en"
+  "http://localhost:7700/api/movies/search?query=outrun&sort_by=vote_average&original_language=en&page=1"
 ```
 
 **Response:**
 ```json
 {
     "page": 1,
+    "page_results": 1,
     "results": [
         {
             "adult": false,
@@ -139,7 +144,7 @@ curl -H "Authorization: Bearer mk_QazOTWqVXeEXWKhg7La_BlZJ0vtw0CCu0gZfIk-tE5o" \
             "original_title": "Outrun",
             "overview": "After a tragic kidnapping leaves him broken...",
             "popularity": 0.2188,
-            "poster_path": "/t4pMTcnlqhaypvzJBUwTfwwcYjs.jpg",
+            "poster_path": "/t4pMTcnlqhaypvzJBUwTfwcYjs.jpg",
             "release_date": "2021-05-28",
             "title": "Outrun",
             "vote_average": 0.0,
@@ -151,6 +156,11 @@ curl -H "Authorization: Bearer mk_QazOTWqVXeEXWKhg7La_BlZJ0vtw0CCu0gZfIk-tE5o" \
 }
 ```
 
+**Notes:**
+- Results are filtered by `original_language` if specified
+- Results are sorted by the `sort_by`, default popularity
+- The `page_results` field shows the number of results after filtering
+
 ### 3. Get Movie Details + Recommendations
 
 **Endpoint:** `GET /api/movies/{movie_id}`
@@ -160,36 +170,59 @@ curl -H "Authorization: Bearer mk_QazOTWqVXeEXWKhg7La_BlZJ0vtw0CCu0gZfIk-tE5o" \
 Authorization: Bearer {api_key or admin001}
 ```
 
+**Parameters:**
+- `movie_id` (path parameter) - Must be a positive integer
+- `language`
+- `page`
+
 **Example:**
 ```bash
 curl -H "Authorization: Bearer mk_QazOTWqVXeEXWKhg7La_BlZJ0vtw0CCu0gZfIk-tE5o" \
-  "http://localhost:7700/api/movies/785542"
+  "http://localhost:7700/api/movies/785542?language=en-US&page=1"
 ```
 
 **Response:**
 ```json
 {
-    "cache_hit": true,
+    "cache_hit": false,
     "movie": {
         "id": 785542,
-        "overview": "Fresh out of rehab, Rona returns to the Orkney Islands...",
-        "poster_path": "/zfRR2CkbvYrLuOPQFm8vBaENyMy.jpg",
-        "release_date": "2024-09-27",
         "title": "The Outrun",
-        "vote_average": 6.808
+        "release_date": "2024-09-27",
+        "overview": "Fresh out of rehab, Rona returns to the Orkney Islands...",
+        "genres": [
+            {
+                "id": 18,
+                "name": "Drama"
+            }
+        ],
+        "runtime": 118,
+        "vote_average": 6.808,
+        "vote_count": 146,
+        "poster_path": "/zfRR2CkbvYrLuOPQFm8vBaENyMy.jpg",
+        "backdrop_path": "/9V9pd05xDpPdEDwCqLuHkgcYmqP.jpg",
+        "tagline": "Sometimes we must go back to move forward."
     },
-    "recommendations": [
-        {
-            "id": 15436,
-            "title": "Let It Rain",
-            "overview": "Agathe Villanova is a self-centered...",
-            "poster_path": "/yg6CvMBpzz2wdnlUgB3Fhw4fKvP.jpg",
-            "release_date": "2008-09-17",
-            "vote_average": 5.6
-        }
-    ]
+    "recommendations": {
+        "results": [
+            {
+                "id": 15436,
+                "title": "Let It Rain",
+                "release_date": "2008-09-17",
+                "overview": "Agathe Villanova is a self-centered...",
+                "vote_average": 5.6,
+                "vote_count": 25,
+                "poster_path": "/yg6CvMBpzz2wdnlUgB3Fhw4fKvP.jpg"
+            }
+        ],
+        "total_results": 5
+    }
 }
 ```
+
+**Notes:**
+- The `cache_hit` field indicates if the response came from cache
+- Cache key format: `movie:{movie_id}:{language}`
 
 ### Common Error Responses
 
