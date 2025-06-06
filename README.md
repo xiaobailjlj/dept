@@ -16,11 +16,15 @@ docker-compose up --build
 
 # Access the application
 # Frontend: http://127.0.0.1:7700
-# API: http://127.0.0.1:77000/api
+# API: http://127.0.0.1:7700/api
 ```
 
 ### Local Development
 ```bash
+# Clone the repository
+git clone https://github.com/xiaobailjlj/dept.git
+cd dept
+
 # Install dependencies
 pip install -r requirements.txt
 
@@ -32,6 +36,7 @@ redis-cli -a "tmdb-cache-key" ping
 python app.py
 
 # Frontend: http://localhost:7700
+# API: http://localhost:7700/api
 ```
 
 ## Tech Stack
