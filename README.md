@@ -25,7 +25,8 @@ docker-compose up --build
 pip install -r requirements.txt
 
 # Start Redis
-redis-server
+redis-server ./conf/redis.conf
+redis-cli -a "tmdb-cache-key" ping
 
 # Run application
 python app.py
